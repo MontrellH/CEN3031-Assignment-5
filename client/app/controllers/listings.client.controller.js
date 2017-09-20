@@ -79,13 +79,44 @@ angular.module('listings').controller('ListingsController', ['$scope', '$locatio
         successfully finished, navigate back to the 'listing.list' state using $state.go(). If an error 
         occurs, pass it to $scope.error. 
        */
+
+       if (!isValid) {
+        $scope.$broadcast('show-errors-check-validity', 'articleForm');
+
+        return false;
+      }
+
+      listing.name = $scope.name;
+      listing.code = $scope.code;
+      listing.address = $scope.address;
+
+
+      Listings.update(listing)
+              .then(function(response) {
+                //if the object is successfully updated redirect back to the 'listing.list'
+                $state.go('listings.list', { successMessage: 'Listing succesfully updated!' });
+              }, function(error) {
+                //otherwise display the error
+                $scope.error = 'Unable to update listing!\n' + error;
+              })  
+
     };
 
     $scope.remove = function() {
       /*
         Implement the remove function. If the removal is successful, navigate back to 'listing.list'. Otherwise, 
         display the error. 
-       */
+      */
+
+      Listings.remove(listing)
+              .then(function(response) {
+                //if the object is successfully removed, navigate back to 'listing.list'
+                $state.go('listings.list', { successMessage: 'Listing succesfully removed!' });
+              }, function(error) {
+                //otherwise display the error
+                $scope.error = 'Unable to delete listing!\n' + error;
+              });
+      
     };
 
     /* Bind the success message to the scope if it exists as part of the current state */
